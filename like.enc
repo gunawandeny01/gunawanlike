@@ -1,0 +1,31 @@
+#!/bin/bash
+waktu=$(date "+%Y-%m-%d %H:%M:%S")
+RED="\e[31m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+CYAN="\e[36m"
+LIGHTGREEN="\e[92m"
+MARGENTA="\e[35m"
+BLUE="\e[34m"
+BOLD="\e[1m"
+NOCOLOR="\e[0m"
+
+gas(){
+data=$(curl -s "https://likes.interinstplus.com/api.php?method=photo.get&device_id=$device_id&device_hash=$device_hash" -L)
+getdata=$(echo $data | grep -Po '(?<=id":)[^},]*' | tr -d '[]"' | sed 's/\(<[^>]*>\|<\/>\|{1|}\)//g')
+cek=$(echo $data | grep -ic "id")
+if [[ $cek =~ "1" ]]; then
+	oid=$(echo $getdata | awk '{print $1}')
+	pid=$(echo $getdata | awk '{print $3}')
+	id=$(echo $data | grep -Po '(?<=user_id":)[^},]*' | tr -d '[]"' | sed 's/\(<[^>]*>\|<\/>\|{1|}\)//g')
+	follow=$(curl -s "https://likes.interinstplus.com/api.php?method=photo.like&device_id=$device_id&device_hash=$device_hash&order_id=$oid&skip=0&info=ok&photo_id=$pid")
+	balance=$(curl -s "https://likes.interinstplus.com/api.php?method=balance.get&device_id=$device_id&device_hash=$device_hash")
+	getbalance=$(echo $balance | grep -Po '(?<=balance":)[^},]*' | tr -d '[]"' | sed 's/\(<[^>]*>\|<\/>\|{1|}\)//g')
+	printf "${GREEN}=> Like {$id} - Balance $getbalance \n${NORMAL}"
+fi
+}
+device_id=$'fb062566cc2e063f_26';
+device_hash=$'91a98c723e77e106f074149670383e76';
+	for (( ; ; )); do
+gas
+done
